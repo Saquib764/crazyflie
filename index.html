@@ -20,17 +20,29 @@
 
 window.onload = function(){
 	console.log("sf")
-sensor = new Gyroscope()
 
+	let pitch = 0;
+	let roll = 0
+
+	X_thres = 20
+	Y_thres = 20
+
+	let X = 0;
+	let Y = 0;
 	let output = document.querySelector("#output")
-	output.innerHTML = "dfds"
 
-sensor.addEventListner('reading', e=>{
-	let output = document.querySelector("#output")
-	output.innerHTML = sensor.x + ", " + sensor.y + ", " + sensor.z
-})
+	function handleOrientation(e){
+		pitch = -e.beta;
+		roll = e.gamma
 
-sensor.start()
+		X = pitch > X_thres?1: pitch < -X_thres?-1: 0;
+		Y = roll > Y_thres?1: roll < -Y_thres?-1: 0;
+
+		output.innerHTML = "X: " + X + ", Y:" + Y
+	}
+	window.addEventListener('deviceorientation', handleOrientation);
+
+
 }
 
 </script>
