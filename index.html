@@ -12,14 +12,15 @@
 </head>
 
 <body>
-	<span id="output">ad</span>
+	<span id="output">Connecting..</span>
 </body>
 
 </html>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.1.1/socket.io.js"></script>
+
 <script>
 
 window.onload = function(){
-	console.log("sf")
 
 	let pitch = 0;
 	let roll = 0
@@ -33,7 +34,7 @@ window.onload = function(){
 
 	function handleOrientation(e){
 		pitch = -e.beta;
-		roll = e.gamma
+		roll = -e.gamma
 
 		X = pitch > X_thres?1: pitch < -X_thres?-1: 0;
 		Y = roll > Y_thres?1: roll < -Y_thres?-1: 0;
@@ -42,7 +43,28 @@ window.onload = function(){
 	}
 	window.addEventListener('deviceorientation', handleOrientation);
 
+	var ip = "85.299.245.109"
+	// const socket = io('http://' + document.domain + ':4477');
+	const socket = io('http://' + ip + ':4477');
+	CONNECTED = false
+	socket.on('connect', function() {
+		CONNECTED = true;
+		console.log("connected")
+	});
+	socket.on('disconnect', function() {
+		CONNECTED = false;
+		console.log("disconnected")
+	});
+
+	setInterval(()=>{
+		if(!CONNECTED)
+			return 0
+
+		socket.emit('command', {vx: X, vy: Y});
+
+	}, 200)
 
 }
+
 
 </script>
